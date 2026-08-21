@@ -1,18 +1,71 @@
 {% load static %}
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>{% block title %}Login{% endblock %}</title>
-    </head>
-    <body>
-        <div id="header">
-            <span class="logo">
-                Bookmarks
-            </span>
+<head>
+    <title>{% block title %}Login{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+    <div id="header">
+
+        <span class="logo">Bookmarks</span>
+
+        {% if request.user.is_authenticated %}
+            <ul class="menu">
+                <li {% if section == "dashboard" %}class="selected"{% endif %}>
+                    <a href="{% url 'dashboard' %}">Dashboard</a>
+                </li>
+
+                <li {% if section == "images" %}class="selected"{% endif %}>
+                    <a href="{% url 'images' %}">Images</a>
+                </li>
+
+                <li {% if section == "peoples" %}class="selected"{% endif %}>
+                    <a href="{% url 'peoples' %}">Peoples</a>
+                </li>
+            </ul>
+        {% endif %}
+
+        <span class="user">
+            {% if request.user.is_authenticated %}
+
+                Hello {{ request.user.first_name|default:request.user.username }},
+
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <input type="submit" value="Logout">
+                </form>
+
+            {% else %}
+
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <input type="text" name="username" placeholder="Username">
+                    <input type="password" name="password" placeholder="Password">
+                    <input type="submit" value="Login">
+                </form>
+
+            {% endif %}
+        </span>
+
+    </div>
+
+    {% if messages %}
+        <div id="messages">
+            {% for message in messages %}
+                <li class="message {{ message.tags }}">
+                    {{ message|safe }}
+                    <a href="#" class="close">X</a>
+                </li>
+            {% endfor %}
         </div>
-        <div id="content">
-            {% block content %}
-            {% endblock %}
-        </div>
-    </body>
+    {% endif %}
+
+    <div id="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+</body>
 </html>
