@@ -1,0 +1,18 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{% block title %}Login{% endblock %}</title>
+    </head>
+    <body>
+        <div id="header">
+            <span class="logo">
+                Bookmarks
+            </span>
+        </div>
+        <div id="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </body>
+</html>
