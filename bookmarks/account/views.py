@@ -51,3 +51,20 @@ def user_logout(request):
         return redirect('login')
 
     return redirect('dashboard')
+
+
+
+def images(request):
+    return render(
+        request,
+        'account/images.html',
+        {'section': 'images'}
+    )
+
+
+def peoples(request):
+    return render(
+        request,
+        'account/peoples.html',
+        {'section': 'peoples'}
+    )
