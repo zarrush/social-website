@@ -4,8 +4,8 @@
 
 {% block content %}
     <h1>Dashboard</h1>
-    <p>
-        Welcome to your dashboard!
+    <>
+        Welcome to your dashboard! <a href="{% url 'edit' %}">You can edit your profile here.</a> or <a href="{% url 'password_change' %}">change your password here.</a>   
     </p>
     <form method="post" action="{% url 'logout' %}">
     {% csrf_token %}
