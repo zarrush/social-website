@@ -52,14 +52,14 @@
     </div>
 
     {% if messages %}
-        <div id="messages">
+        <ul id="messages">
             {% for message in messages %}
                 <li class="message {{ message.tags }}">
                     {{ message|safe }}
                     <a href="#" class="close">X</a>
                 </li>
             {% endfor %}
-        </div>
+        </ul>
     {% endif %}
 
     <div id="content">
