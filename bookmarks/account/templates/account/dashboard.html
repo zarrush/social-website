@@ -3,15 +3,84 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-    <h1>Dashboard</h1>
-    <>
-        Welcome to your dashboard! <a href="{% url 'edit' %}">You can edit your profile here.</a> or <a href="{% url 'password_change' %}">change your password here.</a>   
-    </p>
-    <form method="post" action="{% url 'logout' %}">
-    {% csrf_token %}
+<h1>Dashboard</h1>
 
-    <button type="submit">
-        Log out
-    </button>
+<p>
+    Welcome to your dashboard! 
+    <a href="{% url 'edit' %}">Edit your profile</a> or 
+    <a href="{% url 'password_change' %}">change your password</a>.
+</p>
+
+<hr>
+
+<!-- فرم ساخت پست جدید -->
+<h2>Create a New Post</h2>
+<form method="post" action="{% url 'post_create' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ post_form.as_p }}
+    <button type="submit">Create Post</button>
 </form>
+
+<hr>
+
+<!-- لیست پست‌ها -->
+<h2>Your Feed</h2>
+
+{% if posts %}
+    {% for post in posts %}
+        <div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 20px;">
+            <!-- اطلاعات نویسنده -->
+            <h3>
+                <a href="{% url 'user_profile' post.author.username %}">
+                    {{ post.author.username }}
+                </a>
+            </h3>
+            <small>{{ post.created|timesince }} ago</small>
+
+            <!-- محتوای پست -->
+            <h4>{{ post.title }}</h4>
+            <p>{{ post.body }}</p>
+
+            {% if post.image %}
+                <img src="{{ post.image.url }}" alt="{{ post.title }}" style="max-width: 100%;">
+            {% endif %}
+
+            <!-- آمار -->
+            <p>
+                <strong>Likes:</strong> {{ post.total_likes }} |
+                <strong>Comments:</strong> {{ post.total_comments }}
+            </p>
+
+            <!-- دکمه‌ها -->
+            <p>
+                <a href="{% url 'post_like' post.id %}">
+                    {% if request.user in post.likes.all %}
+                        Unlike
+                    {% else %}
+                        Like
+                    {% endif %}
+                </a>
+                |
+                <a href="{% url 'post_detail' post.id %}">View Details & Comments</a>
+            </p>
+
+            <!-- دکمه فالو (اگر پست از کاربر دیگه‌ایه) -->
+            {% if post.author != request.user %}
+                <p>
+                    <a href="{% url 'user_follow' post.author.id %}">
+                        {% if post.author in request.user.following.all %}
+                            Unfollow {{ post.author.username }}
+                        {% else %}
+                            Follow {{ post.author.username }}
+                        {% endif %}
+                    </a>
+                </p>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% else %}
+    <p>You don't have any posts in your feed yet. 
+       <a href="{% url 'user_list' %}">Follow some users</a> to see their posts!</p>
+{% endif %}
+
 {% endblock %}

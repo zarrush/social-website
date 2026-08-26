@@ -1,11 +1,12 @@
 from django import forms
-from django.conf.locale import da
-from django.contrib.auth.forms import User
-from .models import Profile
+from django.contrib.auth.models import User
+from .models import Profile, Post, Comment
+
 
 class LoginForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
+
 
 class UserRegistrationForm(forms.ModelForm):
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
@@ -27,6 +28,7 @@ class UserRegistrationForm(forms.ModelForm):
             raise forms.ValidationError('Email address already in use.')
         return email
 
+
 class UserEditForm(forms.ModelForm):
     class Meta:
         model = User
@@ -34,15 +36,26 @@ class UserEditForm(forms.ModelForm):
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        qs = User.objects.filter(email=email).exclude(pk=self.instance.pk)
         if User.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
             raise forms.ValidationError('Email address already in use.')
         return email
-    
-
 
 
 class ProfileEditForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('bio', 'location', 'birth_date', 'photo')
+
+
+# --- فرم‌های جدید برای پست و کامنت ---
+
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ('title', 'body', 'image')
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ('body',)

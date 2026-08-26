@@ -2,53 +2,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{% block title %}Login{% endblock %}</title>
+    <title>{% block title %}Social Website{% endblock %}</title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
 </head>
 
 <body>
     <div id="header">
-
-        <span class="logo">Bookmarks</span>
+        <span class="logo">Social Website</span>
 
         {% if request.user.is_authenticated %}
             <ul class="menu">
+                <!-- داشبورد (فید پست‌ها) -->
                 <li {% if section == "dashboard" %}class="selected"{% endif %}>
                     <a href="{% url 'dashboard' %}">Dashboard</a>
                 </li>
 
-                <li {% if section == "images" %}class="selected"{% endif %}>
-                    <a href="{% url 'images' %}">Images</a>
+                <!-- لیست کاربران (جایگزین Peoples) -->
+                <li {% if section == "users" %}class="selected"{% endif %}>
+                    <a href="{% url 'user_list' %}">Users</a>
                 </li>
 
-                <li {% if section == "peoples" %}class="selected"{% endif %}>
-                    <a href="{% url 'peoples' %}">Peoples</a>
+                <!-- ساخت پست جدید -->
+                <li>
+                    <a href="{% url 'post_create' %}">Create Post</a>
                 </li>
             </ul>
         {% endif %}
 
         <span class="user">
             {% if request.user.is_authenticated %}
-
                 Hello {{ request.user.first_name|default:request.user.username }},
-
-                <form method="post" action="{% url 'logout' %}">
+                
+                <!-- لینک‌های کاربردی پروفایل -->
+                <a href="{% url 'user_profile' request.user.username %}">My Profile</a> |
+                <a href="{% url 'edit' %}">Edit Profile</a> |
+                
+                <form method="post" action="{% url 'logout' %}" style="display:inline;">
                     {% csrf_token %}
                     <input type="submit" value="Logout">
                 </form>
 
             {% else %}
-
-                <form method="post" action="{% url 'login' %}">
-                    {% csrf_token %}
-                    <input type="text" name="username" placeholder="Username">
-                    <input type="password" name="password" placeholder="Password">
-                    <input type="submit" value="Login">
-                </form>
-
+                <a href="{% url 'login' %}">Login</a> |
+                <a href="{% url 'register' %}">Register</a>
             {% endif %}
         </span>
-
     </div>
 
     {% if messages %}
