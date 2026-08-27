@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+    <a href="{% url 'dashboard' %}">← Back to Dashboard</a>
+
+    <h1>{{ post.title }}</h1>
+    <p>By <a href="{% url 'user_profile' post.author.username %}">{{ post.author.username }}</a> - {{ post.created|date:"F j, Y g:i A" }}</p>
+
+    <p>{{ post.body }}</p>
+
+    {% if post.image %}
+        <img src="{{ post.image.url }}" alt="{{ post.title }}" style="max-width: 100%;">
+    {% endif %}
+
+    <p>
+        Likes: {{ post.total_likes }} | Comments: {{ post.total_comments }}
+    </p>
+
+    <p>
+        <a href="{% url 'post_like' post.id %}">
+            {% if is_liked %}Unlike{% else %}Like{% endif %}
+        </a>
+    </p>
+
+    {% if post.author != request.user %}
+        <p>
+            <a href="{% url 'user_follow' post.author.id %}">
+                {% if post.author in request.user.following.all %}
+                    Unfollow {{ post.author.username }}
+                {% else %}
+                    Follow {{ post.author.username }}
+                {% endif %}
+            </a>
+        </p>
+    {% endif %}
+
+    <hr>
+
+    <h2>Comments ({{ comments.count }})</h2>
+
+    {% if request.user.is_authenticated %}
+        <form method="post" action="{% url 'add_comment' post.id %}">
+            {% csrf_token %}
+            {{ comment_form.as_p }}
+            <button type="submit">Post Comment</button>
+        </form>
+    {% else %}
+        <p><a href="{% url 'login' %}">Login</a> to post a comment.</p>
+    {% endif %}
+
+    {% for comment in comments %}
+        <div>
+            <strong>{{ comment.user.username }}</strong> - {{ comment.created|timesince }} ago
+            <p>{{ comment.body }}</p>
+        </div>
+        <hr>
+    {% empty %}
+        <p>No comments yet.</p>
+    {% endfor %}
+
+{% endblock %}

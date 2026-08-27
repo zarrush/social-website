@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Users{% endblock %}
+
+{% block content %}
+    <h1>Find People</h1>
+
+    <form method="get">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search users...">
+        <button type="submit">Search</button>
+    </form>
+
+    {% for user in users %}
+        <div>
+            <a href="{% url 'user_profile' user.username %}">
+                {{ user.get_full_name|default:user.username }} (@{{ user.username }})
+            </a>
+            {% if user.profile.location %}
+                - {{ user.profile.location }}
+            {% endif %}
+
+            {% if user.id in following_ids %}
+                <a href="{% url 'user_follow' user.id %}">Unfollow</a>
+            {% else %}
+                <a href="{% url 'user_follow' user.id %}">Follow</a>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p>No users found.</p>
+    {% endfor %}
+
+{% endblock %}

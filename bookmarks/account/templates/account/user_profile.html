@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}{{ profile_user.username }}'s Profile{% endblock %}
+
+{% block content %}
+    <h1>{{ profile_user.get_full_name|default:profile_user.username }}</h1>
+    <p>@{{ profile_user.username }}</p>
+
+    {% if profile_user.profile.bio %}
+        <p>{{ profile_user.profile.bio }}</p>
+    {% endif %}
+
+    {% if profile_user.profile.location %}
+        <p>Location: {{ profile_user.profile.location }}</p>
+    {% endif %}
+
+    <p>
+        {{ profile_user.followers.count }} followers | 
+        {{ profile_user.following.count }} following
+    </p>
+
+    {% if profile_user != request.user %}
+        <a href="{% url 'user_follow' profile_user.id %}">
+            {% if is_following %}Unfollow{% else %}Follow{% endif %}
+        </a>
+    {% else %}
+        <a href="{% url 'edit' %}">Edit Profile</a>
+    {% endif %}
+
+    <hr>
+
+    <h2>Posts</h2>
+
+    {% for post in posts %}
+        <div>
+            <h3><a href="{% url 'post_detail' post.id %}">{{ post.title }}</a></h3>
+            <p>{{ post.body|truncatewords:30 }}</p>
+            <small>{{ post.created|timesince }} ago</small>
+            <p>Likes: {{ post.total_likes }} | Comments: {{ post.total_comments }}</p>
+        </div>
+        <hr>
+    {% empty %}
+        <p>No posts yet.</p>
+    {% endfor %}
+
+{% endblock %}
